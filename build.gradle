@@ -17,12 +17,11 @@ dependencies {
 	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
 	compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.1'
 
-	testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.1.0'
-}
+	compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-scala_2.12', version: '2.10.2'
+	compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.10.2'
 
-task run(type: JavaExec, dependsOn: classes) {
-	main = 'com.energyHub.interview.Main'
-	classpath sourceSets.main.runtimeClasspath
-	classpath configurations.runtime
-	systemProperty("log4j.configurationFile", "src/main/resources/log4j.properties")
+	testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.1.0'
+	testCompile group: 'org.scalatestplus', name: 'scalatestplus-junit_2.12', version: '1.0.0-M2'
+	testCompile group: 'junit', name: 'junit', version: '4.12'
+
 }
