@@ -1,5 +1,5 @@
-package com.energyHub.interview.thermostatDeserializer
-import com.energyHub.interview.ThermostatDelta
+package com.energyHub.interview.thermostat.deserializer
+import com.energyHub.interview.thermostat.ThermostatDelta
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule

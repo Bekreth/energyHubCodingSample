@@ -1,4 +1,4 @@
-package com.energyHub.interview
+package com.energyHub.interview.thermostat
 
 import java.time.LocalDateTime
 

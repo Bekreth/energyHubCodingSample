@@ -1,8 +1,8 @@
-package com.energyHub.interview.thermostatDeserializer
+package com.energyHub.interview.thermostat.deserializer
 
 import java.time.LocalDateTime
 
-import com.energyHub.interview.{SetTemperature, ThermostatData, ThermostatDelta}
+import com.energyHub.interview.thermostat.{SetTemperature, ThermostatData, ThermostatDelta}
 import org.junit.runner.RunWith
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
