@@ -38,15 +38,15 @@ class JsonDeserializerTest extends AnyFlatSpec with Matchers {
 
     val expectedDelta = ThermostatDelta(changeTime = LocalDateTime.parse("2016-01-01T00:30:00.001059"),
       before = ThermostatData(
-        lastAlertTs = LocalDateTime.parse("2015-12-31T06:31:00.005702"),
-        ambientTemp = 77,
-        schedule = true,
-        setpoint = SetTemperature(heatTemp = 69, coolTemp = 79)),
+        lastAlertTs = Some(LocalDateTime.parse("2015-12-31T06:31:00.005702")),
+        ambientTemp = Some(77),
+        schedule = Some(true),
+        setpoint = Some(SetTemperature(heatTemp = Some(69), coolTemp = Some(79)))),
       after = ThermostatData(
-        lastAlertTs = LocalDateTime.parse("2016-01-01T04:36:00.033185"),
-        ambientTemp = 79,
-        schedule = false,
-        setpoint = SetTemperature(heatTemp = 67, coolTemp = 80)
+        lastAlertTs = Some(LocalDateTime.parse("2016-01-01T04:36:00.033185")),
+        ambientTemp = Some(79),
+        schedule = Some(false),
+        setpoint = Some(SetTemperature(heatTemp = Some(67), coolTemp = Some(80)))
       ))
 
     val expectedOutput = Some(expectedDelta)
