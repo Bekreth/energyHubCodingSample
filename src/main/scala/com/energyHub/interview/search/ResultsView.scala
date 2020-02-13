@@ -9,15 +9,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 case class ResultsView(eventTime: LocalDateTime, lastAlertTs: LocalDateTime,
                        ambientTemp: Double, heatTemp: Double, coolTemp: Double,
-                       scheduled: Boolean, mode: Mode) {
-
-  lazy val serialize: String = {
-    val mapper = new ObjectMapper()
-    mapper.registerModule(DefaultScalaModule)
-    mapper.registerModule(new JavaTimeModule())
-    mapper.writeValueAsString(this)
-  }
-}
+                       scheduled: Boolean, mode: Mode)
 
 object ResultsView {
 
@@ -31,5 +23,12 @@ object ResultsView {
       scheduled = data.schedule.get,
       mode = data.mode.orNull
     )
+  }
+
+  def serialize(view: ResultsView): String = {
+    val mapper = new ObjectMapper()
+    mapper.registerModule(DefaultScalaModule)
+    mapper.registerModule(new JavaTimeModule())
+    mapper.writeValueAsString(view)
   }
 }

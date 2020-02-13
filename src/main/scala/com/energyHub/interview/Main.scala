@@ -1,35 +1,52 @@
 package com.energyHub.interview
 
-import java.time.LocalDateTime
+import com.energyHub.interview.search.StreamSearcher.{CurrentSearchState, SurroundingEvents}
+import com.energyHub.interview.search.{ResultsView, StreamSearcher}
+import com.energyHub.interview.thermostat.LocalFileReader
+import com.energyHub.interview.thermostat.deserializer.JsonDeserializer
+import scopt.OParser
 
-import com.typesafe.scalalogging.LazyLogging
-import scopt.{OParser, OptionParser}
+import scala.util.{Failure, Success}
 
-case class CommandConfig(targetDate: Option[LocalDateTime] = None)
+object Main extends App {
 
-object Main extends App 
-  with LazyLogging {
-
-//  val builder = OParser.builder[CommandConfig]
-
-  /*
-  val parser1 = {
-    import builder._
-    OParser.sequence(
-      programName("something"),
-      head(""),
-      opt[String]('t', "timeStamp")
-        .action((inString, config) => config.copy(targetDate = Some(LocalDateTime.parse(inString))))
-        .text("The desired time")
-    )
+  val builder = OParser.builder[CommandConfig]
+  OParser.parse(new CommandArguments(builder).parser, args, CommandConfig()) match {
+    case Some(config) => runSearch(config)
+    case None => println("Invalid input")
   }
 
-  OParser.parse(parser1, args, CommandConfig()) match {
-    case Some(input) =>
-      println(input)
-    case None =>
-      println("Something went wrong")
+  def runSearch(config: CommandConfig): Unit = {
+    LocalFileReader.readLocalFile(config.filePath) match {
+      case Failure(exception) => println("Failed to process request: %s", exception)
+      case Success(lines) => {
+        val eitherOutput = StreamSearcher
+          .searchStream(input = lines
+            .map(JsonDeserializer.deserialize)
+            .filter(_.nonEmpty)
+            .map(_.get),
+          predicate = config.predicate)
+
+        outputResults(config, eitherOutput)
+      }
+    }
   }
-   */
+
+  def outputResults(config: CommandConfig, eitherOutput: Either[SurroundingEvents, CurrentSearchState]): Unit = {
+    eitherOutput match {
+      case Left(value) => {
+        val before = ResultsView.readThermostatData(value._1)
+        val after = ResultsView.readThermostatData(value._2)
+        println("events were found.\n\tbefore:  %s\n\tafter:  %s"
+          .format(ResultsView.serialize(before), ResultsView.serialize(after)))
+      }
+      case Right(value) => {
+        //TODO: Was aiming to save this in working memory and provide end user with an interactive shell to load
+        //    more data dynamically and continue the search.
+        println(("Unable to find an event matching your search.  " +
+          "Final state during out put is: %s").format(value))
+      }
+    }
+  }
 
 }

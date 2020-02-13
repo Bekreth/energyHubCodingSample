@@ -13,7 +13,7 @@ sealed trait RegexWrapper[T] {
 }
 
 object BooleanRegexWrapper extends RegexWrapper[Boolean] {
-  override val regex: Regex = new Regex("_=(true|false)")
+  override val regex: Regex = new Regex("eq-(true|false)")
   override protected def handleMatches(matches: Regex.Match): Predicate[Boolean] = {
     matches.group(1) match {
       case "true" => (x: Boolean) => x
@@ -22,25 +22,25 @@ object BooleanRegexWrapper extends RegexWrapper[Boolean] {
   }
 }
 
-object NumberRegexWrapper extends RegexWrapper[Int] {
-  override val regex: Regex = new Regex("_(<|>|=)(\\d+)")
-  override protected def handleMatches(matches: Regex.Match): Predicate[Int] = {
+object NumberRegexWrapper extends RegexWrapper[Double] {
+  override val regex: Regex = new Regex("(lt|gt|sq)-(\\d+)")
+  override protected def handleMatches(matches: Regex.Match): Predicate[Double] = {
     val target = matches.group(2).toInt
     matches.group(1) match {
-      case "<" => (x: Int) => x < target
-      case ">" => (x: Int) => x > target
-      case "=" => (x: Int) => x == target
+      case "lt" => (x: Double) => x < target
+      case "gt" => (x: Double) => x > target
+      case "eq" => (x: Double) => x == target
     }
   }
 }
 
 object TimeRegexWrapper extends RegexWrapper[LocalDateTime] {
-  override val regex: Regex = new Regex("_(<|>)(\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{2}:\\d{2})")
+  override val regex: Regex = new Regex("(lt|gt)-(\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{2}:\\d{2})")
   override protected def handleMatches(matches: Regex.Match): Predicate[LocalDateTime] = {
     val target = LocalDateTime.parse(matches.group(2))
     matches.group(1) match {
-      case "<" => (x: LocalDateTime) => x.isBefore(target)
-      case ">" => (x: LocalDateTime) => x.isAfter(target)
+      case "lt" => (x: LocalDateTime) => x.isBefore(target)
+      case "gt" => (x: LocalDateTime) => x.isAfter(target)
     }
   }
 }

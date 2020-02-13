@@ -29,7 +29,7 @@ class JsonDeserializerTest extends AnyFlatSpec with Matchers {
       |     "ambientTemp": 77,
       |     "schedule": true,
       |     "lastAlertTs": "2015-12-31T06:31:00.005702",
-      |     "mode": "AUTO",
+      |     "mode": "HEAT",
       |     "setpoint": {
       |       "heatTemp": 69,
       |       "coolTemp": 79

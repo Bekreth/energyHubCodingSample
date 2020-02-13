@@ -89,8 +89,8 @@ class CommandArguments(builder: OParserBuilder[CommandConfig]) {
 
   private def validatePredicate(key: String, value: String): Either[String, Unit] = {
     fieldAccessorMapping(key)._1.regex.findFirstMatchIn(value) match {
-      case None => Left("The provide string doesn't match the possible predicates: %s".format(value))
       case Some(_) => Right()
+      case None => Left("The provide string doesn't match the possible predicates: %s".format(value))
     }
   }
 
@@ -118,7 +118,7 @@ class CommandArguments(builder: OParserBuilder[CommandConfig]) {
         val booleanString = entry._2
         // This match statement exists solely to take the generics wildcards [_] and make them concrete [Int].
         fieldAccessorMapping(entry._1) match {
-          case mapping: FieldMapping[Int] => buildDataPredicate[Int](mapping, booleanString)
+          case mapping: FieldMapping[Double] => buildDataPredicate[Double](mapping, booleanString)
           case mapping: FieldMapping[Boolean] => buildDataPredicate[Boolean](mapping, booleanString)
           case mapping: FieldMapping[LocalDateTime] => buildDataPredicate[LocalDateTime](mapping, booleanString)
         }
