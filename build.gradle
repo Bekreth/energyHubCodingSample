@@ -1,11 +1,18 @@
 plugins {
 	id 'scala'
 	id 'maven'
+	id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
 repositories {
 	mavenLocal()
 	mavenCentral()
+}
+
+jar {
+	manifest {
+		attributes 'Main-Class': 'com.energyHub.interview.Main'
+	}
 }
 
 dependencies {
@@ -19,6 +26,8 @@ dependencies {
 
 	compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-scala_2.12', version: '2.10.2'
 	compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.10.2'
+
+	compile group: 'com.github.scopt', name: 'scopt_2.12', version:'4.0.0-RC2'
 
 	testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.1.0'
 	testCompile group: 'org.scalatestplus', name: 'scalatestplus-junit_2.12', version: '1.0.0-M2'
