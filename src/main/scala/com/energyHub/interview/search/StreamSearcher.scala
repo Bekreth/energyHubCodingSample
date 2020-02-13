@@ -1,4 +1,4 @@
-package com.energyHub.interview
+package com.energyHub.interview.search
 
 import java.util.function.Predicate
 

@@ -2,19 +2,19 @@ package com.energyHub.interview.thermostat
 
 import java.time.LocalDateTime
 
-trait WarmedData {
-  def warmed(): Boolean
-}
-
 trait DeltaState[T] {
   def copyToNewState(nextState: T): T
 }
 
 
-case class SetTemperature(heatTemp: Option[Int], coolTemp: Option[Int]) extends WarmedData
-  with DeltaState[SetTemperature] {
+case class ThermostatDelta(changeTime: LocalDateTime, before: ThermostatData, after: ThermostatData)
 
-  override def warmed(): Boolean = heatTemp.nonEmpty && coolTemp.nonEmpty
+case class SetTemperature(heatTemp: Option[Double], coolTemp: Option[Double]) extends DeltaState[SetTemperature] {
+
+  def warmed(): Boolean = {
+    heatTemp.nonEmpty &&
+      coolTemp.nonEmpty
+  }
 
   override def copyToNewState(nextState: SetTemperature): SetTemperature = {
     this.copy(
@@ -22,22 +22,21 @@ case class SetTemperature(heatTemp: Option[Int], coolTemp: Option[Int]) extends 
       coolTemp = nextState.coolTemp.orElse(this.coolTemp),
     )
   }
-
 }
 
 
 case class ThermostatData(lastAlertTs: Option[LocalDateTime] = None,
-                          ambientTemp: Option[Int] = None,
+                          mode: Option[Mode] = None,
+                          ambientTemp: Option[Double] = None,
                           schedule: Option[Boolean] = None,
                           setpoint: Option[SetTemperature] = None,
-                          eventTime: Option[LocalDateTime] = None) extends WarmedData
-  with DeltaState[ThermostatData] {
-
-  override def warmed(): Boolean = {
+                          eventTime: Option[LocalDateTime] = None) extends DeltaState[ThermostatData] {
+  def warmed(): Boolean = {
     lastAlertTs.nonEmpty &&
       ambientTemp.nonEmpty &&
       schedule.nonEmpty &&
-      setpoint.map(_.warmed()).nonEmpty
+      setpoint.nonEmpty &&
+      setpoint.get.warmed()
   }
 
   override def copyToNewState(nextState: ThermostatData): ThermostatData = {
@@ -50,4 +49,3 @@ case class ThermostatData(lastAlertTs: Option[LocalDateTime] = None,
   }
 }
 
-case class ThermostatDelta(changeTime: LocalDateTime, before: ThermostatData, after: ThermostatData)

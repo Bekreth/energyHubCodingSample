@@ -3,10 +3,8 @@ import com.energyHub.interview.thermostat.ThermostatDelta
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.typesafe.scalalogging.LazyLogging
 
-object JsonDeserializer extends ThermostatDeserializer[String]
-  with LazyLogging {
+object JsonDeserializer extends ThermostatDeserializer[String] {
 
   private val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
@@ -16,8 +14,8 @@ object JsonDeserializer extends ThermostatDeserializer[String]
     try {
       Some(mapper.readValue(serializedData, classOf[ThermostatDelta]))
     } catch {
-      case _ => {
-        logger.warn("Unable to deserialize string: %s", serializedData)
+      case exception: Exception => {
+        println("Was unable to deserialize string: %s: %s", serializedData, exception)
         None
       }
     }

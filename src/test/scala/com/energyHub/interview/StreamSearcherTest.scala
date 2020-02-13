@@ -3,7 +3,8 @@ package com.energyHub.interview
 import java.time.LocalDateTime
 import java.util.function.Predicate
 
-import com.energyHub.interview.StreamSearcher.{CurrentSearchState, SurroundingEvents}
+import com.energyHub.interview.search.StreamSearcher
+import com.energyHub.interview.search.StreamSearcher.{CurrentSearchState, SurroundingEvents}
 import com.energyHub.interview.thermostat.{SetTemperature, ThermostatData, ThermostatDelta}
 import org.junit.runner.RunWith
 import org.scalatest.flatspec.AnyFlatSpec
@@ -11,7 +12,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class StreamSearcherTest extends AnyFlatSpec with Matchers{
+class StreamSearcherTest extends AnyFlatSpec with Matchers {
 
   val baseTime: LocalDateTime = LocalDateTime.parse("2020-02-14T15:20:30.000555")
 

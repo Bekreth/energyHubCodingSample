@@ -1,13 +1,22 @@
 package com.energyHub.interview.thermostat
 
 import java.io.{File, FileInputStream}
-import java.util.Date
 
 import scala.util.{Failure, Success, Try}
 
 object LocalFileReader {
 
-  def readDirectoryOfGzippedFiles(directoryName: String): Try[Seq[String]] = {
+  def readLocalFile(fileName: String): Try[Iterator[String]] = {
+    try {
+      val file = new File(fileName)
+      if (file.isDirectory) readDirectoryOfGzippedFiles(fileName)
+      else readGzippedFileByLine(fileName)
+    } catch {
+      case exception: Exception => Failure(exception)
+    }
+  }
+
+  def readDirectoryOfGzippedFiles(directoryName: String): Try[Iterator[String]] = {
     try {
       val baseDirectory = new File(directoryName)
       if (baseDirectory.isDirectory) {
@@ -15,6 +24,7 @@ object LocalFileReader {
           baseDirectory.listFiles()
             .sortBy(file => file.getName)
             .flatMap(flatMapRead)
+            .toIterator
         })
       } else {
         Failure(new RuntimeException("The provided string was not a directory"))
@@ -24,14 +34,14 @@ object LocalFileReader {
     }
   }
 
-  def readGzippedFileByLine(fileName: String): Try[Seq[String]] = {
+  def readGzippedFileByLine(fileName: String): Try[Iterator[String]] = {
     Try({
       val fileStream = new FileInputStream(fileName)
-      new Gunzipper(fileStream).toSeq
+      new Gunzipper(fileStream)
     })
   }
 
-  private def flatMapRead(file: File): Seq[String] = {
+  private def flatMapRead(file: File): Iterator[String] = {
     {
       if (file.isDirectory)
         readDirectoryOfGzippedFiles(file.getAbsolutePath)

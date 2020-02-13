@@ -2,7 +2,7 @@ package com.energyHub.interview.thermostat.deserializer
 
 import java.time.LocalDateTime
 
-import com.energyHub.interview.thermostat.{SetTemperature, ThermostatData, ThermostatDelta}
+import com.energyHub.interview.thermostat.{HEAT, OFF, SetTemperature, ThermostatData, ThermostatDelta}
 import org.junit.runner.RunWith
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -19,6 +19,7 @@ class JsonDeserializerTest extends AnyFlatSpec with Matchers {
       |     "ambientTemp": 79,
       |     "schedule": false,
       |     "lastAlertTs": "2016-01-01T04:36:00.033185",
+      |     "mode": "OFF",
       |     "setpoint": {
       |       "heatTemp": 67,
       |       "coolTemp": 80
@@ -28,6 +29,7 @@ class JsonDeserializerTest extends AnyFlatSpec with Matchers {
       |     "ambientTemp": 77,
       |     "schedule": true,
       |     "lastAlertTs": "2015-12-31T06:31:00.005702",
+      |     "mode": "AUTO",
       |     "setpoint": {
       |       "heatTemp": 69,
       |       "coolTemp": 79
@@ -41,11 +43,13 @@ class JsonDeserializerTest extends AnyFlatSpec with Matchers {
         lastAlertTs = Some(LocalDateTime.parse("2015-12-31T06:31:00.005702")),
         ambientTemp = Some(77),
         schedule = Some(true),
+        mode = Some(HEAT),
         setpoint = Some(SetTemperature(heatTemp = Some(69), coolTemp = Some(79)))),
       after = ThermostatData(
         lastAlertTs = Some(LocalDateTime.parse("2016-01-01T04:36:00.033185")),
         ambientTemp = Some(79),
         schedule = Some(false),
+        mode = Some(OFF),
         setpoint = Some(SetTemperature(heatTemp = Some(67), coolTemp = Some(80)))
       ))
 
