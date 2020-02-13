@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
+/**
+ * This is for rendering to the end user (flattens out the data)
+ */
 case class ResultsView(eventTime: LocalDateTime, lastAlertTs: LocalDateTime,
                        ambientTemp: Double, heatTemp: Double, coolTemp: Double,
                        scheduled: Boolean, mode: Mode)

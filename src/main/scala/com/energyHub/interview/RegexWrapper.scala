@@ -5,6 +5,10 @@ import java.util.function.Predicate
 
 import scala.util.matching.Regex
 
+/**
+ * These wrapper are used to convert string based search quarries into type casted predicates.
+ * @tparam T
+ */
 sealed trait RegexWrapper[T] {
   val regex: Regex
   final def regexToPredicate(input: String): Predicate[T] = regex.findFirstMatchIn(input).map(handleMatches).get
@@ -23,7 +27,7 @@ object BooleanRegexWrapper extends RegexWrapper[Boolean] {
 }
 
 object NumberRegexWrapper extends RegexWrapper[Double] {
-  override val regex: Regex = new Regex("(lt|gt|sq)-(\\d+)")
+  override val regex: Regex = new Regex("(lt|gt|eq)-(\\d+)")
   override protected def handleMatches(matches: Regex.Match): Predicate[Double] = {
     val target = matches.group(2).toInt
     matches.group(1) match {

@@ -4,6 +4,9 @@ import java.io.{File, FileInputStream}
 
 import scala.util.{Failure, Success, Try}
 
+/**
+ * LocalFileRead handles the messiness of files before output an iterator for json lines.
+ */
 object LocalFileReader {
 
   def readLocalFile(fileName: String): Try[Iterator[String]] = {

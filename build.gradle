@@ -34,3 +34,12 @@ dependencies {
 	testCompile group: 'junit', name: 'junit', version: '4.12'
 
 }
+
+task testPrep {
+	//TODO Tie this into the test process by having the build artifact saved
+	doFirst {
+		def baseDirectory = "./src/test/resources/localFileReaderTest/nested/"
+		def process = "${baseDirectory}nester.sh ${baseDirectory}".execute()
+		process.waitFor()
+	}
+}

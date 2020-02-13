@@ -11,6 +11,10 @@ case class CommandConfig(filePath: String = null,
                          fieldAccessors: Vector[ThermostatData => _] = Vector(),
                          predicate: Predicate[ThermostatData] = _ => false)
 
+/**
+ * CommandArguments parses the commands that are given to the application in to useful inputs.
+ * @param builder
+ */
 class CommandArguments(builder: OParserBuilder[CommandConfig]) {
 
   type FieldMapping[T] = (RegexWrapper[T], ThermostatData => T)
@@ -26,11 +30,13 @@ class CommandArguments(builder: OParserBuilder[CommandConfig]) {
   val parser: OParser[Unit, CommandConfig] = {
     import builder._
     OParser.sequence(
+      // Basic info
       programName("replay"),
       head("replay v0.1"),
 
       help('h', "help").text("prints this message"),
 
+      // Details about picking files
       arg[String]("<filepath>...")
         .required()
         .validate(filepath => {
@@ -46,13 +52,17 @@ class CommandArguments(builder: OParserBuilder[CommandConfig]) {
         .text("The file to be loaded into memory for processing.  Currently, only 1 file path can be provided.  " +
           "This can be a file or a directory."),
 
+      /*
+      // TODO Tie in the field requests to what actually outputs to end user
       opt[String]('f', "field")
         .validate(validateField)
         .action((input, config) => {
           config.copy(fieldAccessors = config.fieldAccessors :+ fieldAccessorMapping(input)._2)
         })
         .text("The fields from the data you can access.  By default, the entire event will be presented"),
+       */
 
+      // Information about the query options
       opt[Map[String, String]]('e', "eventCondition")
         .required()
         .maxOccurs(1)
@@ -68,15 +78,16 @@ class CommandArguments(builder: OParserBuilder[CommandConfig]) {
           }
         })
         .action(searchAction)
+        //gt, lt, eq were used in place of <, >, = to avoid collisions with bash on the meaning of < and >.
         .text(
           "This is a map of search parameters.  Three types of predicates are support: Boolean, Number, and Time " +
             "predicates.  These predicates will be 'and'ed together for the search over provided files:" +
             "\n\t\t\t  Accepted Values: " +
-            "\n\t\t\t\t  Boolean: _=true, _=false " +
-            "\n\t\t\t\t  Number: _=50, _<50, _>50 " +
-            "\n\t\t\t\t  Time: _<2020-10-01T12:25:00, _>2020-10-01T12:25:00.  Time must be in ISO 8601 format to a 1 second resolution e.g. temp=_<55,schedule=_=false,eventTime=_>2020-12-05T12:25:50"
+            "\n\t\t\t\t  Boolean: eq-true, eq-false " +
+            "\n\t\t\t\t  Number: eq-50, gt-50, lt-50 " +
+            "\n\t\t\t\t  Time: lt-2020-10-01T12:25:00, gt-2020-10-01T12:25:00.  Time must be in ISO 8601 format to a 1 second resolution e.g. temp=gt-55,schedule=eq-false,eventTime=lt-2020-12-05T12:25:50"
             ),
-      note("\n\tThis is the list of fields used in both `field` and `eventCondition` command parameters:\n %s"
+      note("\n\tThis is the list of fields used in both `eventCondition` command parameters:\n %s"
         .format(fieldAccessorMapping.keySet.mkString("\n\t\t")))
 
     )
@@ -103,6 +114,10 @@ class CommandArguments(builder: OParserBuilder[CommandConfig]) {
     })
   }
 
+  /**
+   * This takes the quarries provided through the CLI and compiles them into a single predicate that can be applied
+   *    to an arbitrary ThermostatData object.
+   */
   private def searchAction(input: Map[String, String], config: CommandConfig): CommandConfig = {
     def buildDataPredicate[T](mapping: FieldMapping[T], inputString: String): Predicate[ThermostatData] = {
       (data: ThermostatData) => {
@@ -112,9 +127,9 @@ class CommandArguments(builder: OParserBuilder[CommandConfig]) {
       }
     }
 
+    // Create a collection of predicates against ThermostatData
     val predicateChain: Iterable[Predicate[ThermostatData]] = for (entry <- input)
       yield {
-
         val booleanString = entry._2
         // This match statement exists solely to take the generics wildcards [_] and make them concrete [Int].
         fieldAccessorMapping(entry._1) match {
@@ -124,6 +139,7 @@ class CommandArguments(builder: OParserBuilder[CommandConfig]) {
         }
       }
 
+    // 'and's together the individual predicates into a single predicate.
     val outputPredicate: Predicate[ThermostatData] = (data: ThermostatData) => {
       predicateChain
         .map(_.test(data))

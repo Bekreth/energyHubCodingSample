@@ -15,7 +15,8 @@ object StreamSearcher {
     var nextState = startingState.copy()
 
     def targetData(): Boolean = priorState.warmed() && predicate.test(nextState)
-
+    //TODO: This currently takes in an Iterator given that I need to make a check on whether I've processed all events.
+    //    In the fiction where this is cloud deployed, this should be migrated to a lazy streaming approach instead
     do {
       priorState = nextState.copy()
       val delta = input.next()
